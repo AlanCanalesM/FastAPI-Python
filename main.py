@@ -6,10 +6,17 @@ app = FastAPI(title='This project write about movies',
             )
 
 
+@app.on_event('startup')
+def startup():
+    print ('The server is begining')
+
+
+@app.on_event('shutdown')
+def shutdown():
+    print ('The server is ending')
+
 @app.get('/')
 async def index():
     return 'Hello world!, from a server on FastAPI'
 
-@app.get('/about')
-async def about():
-    return 'About Us'
+
