@@ -32,7 +32,7 @@ async def index():
     return 'Hello world!, from a server on FastAPI'
 
 
-@app.post('/users/')
+@app.post('/users')
 async def create_user(user:UserBaseModel):
 
     user = User.create (
