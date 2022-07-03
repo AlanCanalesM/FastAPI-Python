@@ -2,6 +2,7 @@ import json
 import re
 from urllib import response
 import requests
+from requests import cookies
 
 """ 
 URL = 'http://127.0.0.1:8000/api/v1/reviews'
@@ -56,7 +57,7 @@ if response.status_code == 200:
 else:
     print(response.content)
 """
-
+"""
 REVIEW_ID = 6
 URL = f"http://127.0.0.1:8000/api/v1/reviews/{REVIEW_ID}"
 
@@ -72,3 +73,31 @@ if response.status_code == 200:
 
 else:
     print(response.content)
+    """
+
+
+URL = "http://127.0.0.1:8000/api/v1/users/"
+
+USER = {
+    'username':'tkalan',
+    'password':'4012'
+}
+
+response = requests.post(URL + 'login', json=USER)
+
+if response.status_code == 200:
+    print('Login success!')
+
+    user_id = response.cookies.get_dict().get('user_id')
+
+    cookies = {
+        'user_id':user_id
+    }
+    response = requests.get(URL + 'reviews', cookies=cookies)
+
+    if response.status_code == 200:
+
+        for review in response.json():
+            print(f">{review['review']}-{review['score']}")
+    else: 
+        print(response.content)
