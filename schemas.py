@@ -1,6 +1,27 @@
+from msilib.schema import Class
 from wsgiref.validate import validator
 from pydantic import BaseModel
 from pydantic import validator
+from typing import Any
+from pydantic.utils import GetterDict
+from peewee import ModelSelect
+
+class PeeweeGetterDict(GetterDict):
+    def get(self, key:Any, default: Any = None):
+
+        res = getattr(self._obj, key, default)
+        if isinstance(res, ModelSelect):
+            return list(res)
+
+        return res
+
+
+class ResponseModel(BaseModel):
+    class Config:
+        orm_mode = True
+        getter_dict = PeeweeGetterDict
+
+
 
 
 class UserRequestModel(BaseModel):
@@ -15,6 +36,24 @@ class UserRequestModel(BaseModel):
 
         return username
 
-class UserResponseModel(BaseModel):
+class UserResponseModel(ResponseModel):
     id:int
     username:str
+
+    
+
+class ReviewRequestModel(BaseModel):
+    user_id: int
+    movie_id: int
+    review: str
+    score: int        
+
+
+class ReviewResponseModel(ResponseModel):
+    id: int
+    movie_id: int
+    review: str
+    score: int
+    
+  
+

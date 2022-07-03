@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from numpy import where
 from schemas import UserRequestModel
 from schemas import UserResponseModel
+from schemas import ReviewRequestModel
+from schemas import ReviewResponseModel
 from database import User
 from database import Movie
 from database import userReviews
@@ -48,4 +50,15 @@ async def create_user(user: UserRequestModel):
         password=hash_password
     )
 
-    return UserResponseModel(id=user.id, username=user.username)
+    return user
+
+@app.post('/reviews', response_model=ReviewResponseModel)
+def create_review(review: ReviewRequestModel):
+    user_review = userReviews.create(
+        user_id=review.user_id,
+        movie_id=review.movie_id,
+        review=review.review,
+        score=review.score
+    )
+
+    return user_review
