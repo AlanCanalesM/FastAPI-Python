@@ -7,6 +7,7 @@ from schemas import UserRequestModel
 from schemas import UserResponseModel
 from schemas import ReviewRequestModel
 from schemas import ReviewResponseModel
+from schemas import ReviewUpdateModel
 from database import User
 from database import Movie
 from database import userReviews
@@ -76,14 +77,13 @@ async def create_review(review: ReviewRequestModel):
 @app.get('/reviews', response_model=List[ReviewResponseModel])
 async def get_reviews():
 
-    reviews = userReviews.select() #Select * From userReviews;
+    reviews = userReviews.select()  # Select * From userReviews;
 
-    return [ user_review for user_review in reviews]
+    return [user_review for user_review in reviews]
 
 
 @app.get('/reviews/{review_id}', response_model=ReviewResponseModel)
-
-async def get_review(review_id):
+async def get_review(review_id: int):
 
     user_review = userReviews.select().where(userReviews.id == review_id).first()
 
@@ -94,7 +94,18 @@ async def get_review(review_id):
     return user_review
 
 
+@app.put('/reviews/{review_id}', response_model=ReviewResponseModel)
+async def update_review(review_id: int, new_review: ReviewUpdateModel):
 
+    user_review = userReviews.select().where(userReviews.id == review_id).first()
 
+    if user_review is None:
 
+        raise HTTPException(404, 'Review not found')
 
+    user_review.review = new_review.review
+    user_review.score = new_review.score
+
+    user_review.save()
+
+    return user_review
