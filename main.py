@@ -41,7 +41,7 @@ async def index():
 @app.post('/users', response_model=UserResponseModel)
 async def create_user(user: UserRequestModel):
 
-    if User.select().where(User.username==user.username).first():
+    if User.select().where(User.username == user.username).first():
         return HTTPException(409, 'This username is already exists, You could try with other')
 
     hash_password = User.create_password(user.password)
@@ -51,6 +51,7 @@ async def create_user(user: UserRequestModel):
     )
 
     return user
+
 
 @app.post('/reviews', response_model=ReviewResponseModel)
 def create_review(review: ReviewRequestModel):

@@ -6,8 +6,9 @@ from typing import Any
 from pydantic.utils import GetterDict
 from peewee import ModelSelect
 
+
 class PeeweeGetterDict(GetterDict):
-    def get(self, key:Any, default: Any = None):
+    def get(self, key: Any, default: Any = None):
 
         res = getattr(self._obj, key, default)
         if isinstance(res, ModelSelect):
@@ -22,8 +23,6 @@ class ResponseModel(BaseModel):
         getter_dict = PeeweeGetterDict
 
 
-
-
 class UserRequestModel(BaseModel):
     username: str
     password: str
@@ -36,17 +35,28 @@ class UserRequestModel(BaseModel):
 
         return username
 
-class UserResponseModel(ResponseModel):
-    id:int
-    username:str
 
-    
+class UserResponseModel(ResponseModel):
+    id: int
+    username: str
+
 
 class ReviewRequestModel(BaseModel):
     user_id: int
     movie_id: int
     review: str
-    score: int        
+    score: int
+
+    @validator('score')
+    def score_validator(cls, score):
+
+        if score < 1 or score > 5:
+
+            raise ValueError('Score must be a value between 1 and 5')
+
+        return score
+
+
 
 
 class ReviewResponseModel(ResponseModel):
@@ -54,6 +64,3 @@ class ReviewResponseModel(ResponseModel):
     movie_id: int
     review: str
     score: int
-    
-  
-
