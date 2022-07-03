@@ -2,7 +2,8 @@ from genericpath import exists
 from fastapi import HTTPException
 from fastapi import FastAPI
 from numpy import where
-from schemas import UserBaseModel
+from schemas import UserRequestModel
+from schemas import UserResponseModel
 from database import User
 from database import Movie
 from database import userReviews
@@ -35,8 +36,8 @@ async def index():
     return 'Hello world!, from a server on FastAPI'
 
 
-@app.post('/users')
-async def create_user(user: UserBaseModel):
+@app.post('/users', response_model=UserResponseModel)
+async def create_user(user: UserRequestModel):
 
     if User.select().where(User.username==user.username).first():
         return HTTPException(409, 'This username is already exists, You could try with other')
@@ -47,7 +48,4 @@ async def create_user(user: UserBaseModel):
         password=hash_password
     )
 
-    return {
-        'id':user.id,
-        'username':user.username
-    }
+    return UserResponseModel(id=user.id, username=user.username)
