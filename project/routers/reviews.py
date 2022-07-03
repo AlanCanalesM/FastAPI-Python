@@ -8,7 +8,7 @@ from ..schemas import ReviewUpdateModel
 from fastapi import APIRouter
 from typing import List
 
-router = APIRouter(prefix='/api/v1/reviews')
+router = APIRouter(prefix='/reviews')
 
 
 @router.post('', response_model=ReviewResponseModel)
@@ -69,7 +69,7 @@ async def update_review(review_id: int, new_review: ReviewUpdateModel):
 
 @router.delete('/{review_id}', response_model=ReviewResponseModel)
 async def delete_review(review_id: int):
-    
+
     user_review = userReviews.select().where(userReviews.id == review_id).first()
 
     if user_review is None:
