@@ -1,5 +1,6 @@
 from genericpath import exists
 from fastapi import HTTPException
+from typing import List
 from fastapi import FastAPI
 from numpy import where
 from schemas import UserRequestModel
@@ -70,3 +71,14 @@ def create_review(review: ReviewRequestModel):
     )
 
     return user_review
+
+
+@app.get('/reviews', response_model=List[ReviewResponseModel])
+def get_reviews():
+
+    reviews = userReviews.select() #Select * From userReviews;
+
+    return [ user_review for user_review in reviews]
+
+
+
