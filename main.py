@@ -55,7 +55,7 @@ async def create_user(user: UserRequestModel):
 
 
 @app.post('/reviews', response_model=ReviewResponseModel)
-def create_review(review: ReviewRequestModel):
+async def create_review(review: ReviewRequestModel):
 
     if User.select().where(User.id == review.user_id).first() is None:
         raise HTTPException(404, 'User not found')
@@ -74,11 +74,27 @@ def create_review(review: ReviewRequestModel):
 
 
 @app.get('/reviews', response_model=List[ReviewResponseModel])
-def get_reviews():
+async def get_reviews():
 
     reviews = userReviews.select() #Select * From userReviews;
 
     return [ user_review for user_review in reviews]
+
+
+@app.get('/reviews/{review_id}', response_model=ReviewResponseModel)
+
+async def get_review(review_id):
+
+    user_review = userReviews.select().where(userReviews.id == review_id).first()
+
+    if user_review is None:
+
+        raise HTTPException(404, 'Review not found')
+
+    return user_review
+
+
+
 
 
 
