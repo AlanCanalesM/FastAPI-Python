@@ -41,6 +41,11 @@ class UserResponseModel(ResponseModel):
     username: str
 
 
+class MovieResponseModel(ResponseModel):
+    id: int
+    title: str
+
+
 class ReviewValidator():
 
     @validator('score')
@@ -66,7 +71,7 @@ class ReviewRequestModel(BaseModel, ReviewValidator):
 
 class ReviewResponseModel(ResponseModel):
     id: int
-    movie_id: int
+    movie: MovieResponseModel
     review: str
     score: int
 
