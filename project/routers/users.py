@@ -1,6 +1,10 @@
 from ..database import User
+from fastapi import Cookie, Response
 from fastapi import APIRouter, HTTPException
-from ..schemas import UserRequestModel
+from ..schemas import ReviewResponseModel, UserRequestModel
+from typing import List
+from ..schemas import ReviewResponseModel
+from fastapi import Cookie
 from ..schemas import UserResponseModel
 from fastapi import APIRouter
 from fastapi.security import HTTPBasicCredentials
@@ -24,7 +28,7 @@ async def create_user(user: UserRequestModel):
     return user
 
 @router.post('/login', response_model=UserResponseModel)
-async def login(credentials: HTTPBasicCredentials):
+async def login(credentials: HTTPBasicCredentials, response: Response):
 
     user = User.select().where(User.username == credentials.username).first()
 
@@ -34,5 +38,19 @@ async def login(credentials: HTTPBasicCredentials):
     if user.password != User.create_password(credentials.password):
         raise HTTPException(404, "Password error")
 
+    response.set_cookie(key = 'user_id', value = user.id)
+
     return user
+
+@router.get('/reviews', response_model=List[ReviewResponseModel])
+async def get_reviews(user_id: int = Cookie(None)):
+
+    user = User.select().where(User.id == user_id).first()
+
+    if user is None:
+        raise HTTPException(404, "User not found")
+
+    return [ user_reviews for user_reviews in user.reviews]
+
+
 
